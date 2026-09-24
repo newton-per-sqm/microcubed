@@ -195,7 +195,8 @@ with comparison results.
 
 ## Documentation and development
 
-See the [user guide](docs/index.md), [backend guide](docs/backends.md), and
+Read the [published documentation](https://newton-per-sqm.github.io/microcubed/).
+See the [user guide sources](docs/index.md), [backend guide](docs/backends.md), and
 [contributing guide](CONTRIBUTING.md) for development and validation commands.
 Python code lives in `src/microcubed/`; Rust kernels live in `src/rust/`.
 

@@ -75,3 +75,21 @@ instructions. Core examples do not require an external solver.
 Before a release, update the version in `Cargo.toml`, refresh both lockfiles,
 and review `CHANGELOG.md`. The workflow validates distribution artifacts;
 package publication is a separate maintainer step.
+
+## Publishing documentation on GitHub Pages
+
+In the GitHub repository, select **Settings → Pages → Source → GitHub Actions**.
+The `Publish documentation` workflow builds and deploys on pushes to `main`.
+Its separate deployment job publishes the generated Sphinx HTML using the
+`github-pages` environment; no generated HTML or `gh-pages` branch is needed.
+The workflow run displays the deployed site URL.
+
+To publish executed OOMMF comparison results, open **Actions → Publish
+documentation → Run workflow**, select `main`, and enable `include_oommf`.
+This installs the optional comparison extra and uses oommfc's Docker runner.
+A later ordinary push rebuilds the core docs without those optional outputs;
+run the workflow with `include_oommf` again to republish the full comparison.
+
+The default site is <https://newton-per-sqm.github.io/microcubed/>. If the
+repository owner or name changes, update the README and package documentation
+URL. The workflow derives Sphinx's deployment base URL from GitHub Pages.

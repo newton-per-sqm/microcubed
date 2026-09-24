@@ -33,7 +33,7 @@ dependencies = [
 
 [project.urls]
 Homepage = "https://github.com/newton-per-sqm/microcubed"
-Documentation = "https://microcubed.readthedocs.io/"
+Documentation = "https://newton-per-sqm.github.io/microcubed/"
 Repository = "https://github.com/newton-per-sqm/microcubed"
 Issues = "https://github.com/newton-per-sqm/microcubed/issues"
 
