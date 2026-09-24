@@ -1,0 +1,35 @@
+# Python and Rust build products
+__pycache__/
+*.py[cod]
+*.so
+*.pyd
+*.egg-info/
+/build/
+/dist/
+/target/
+
+# Local environments and tool caches
+.venv*/
+.python-version
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+.coverage
+.coverage.*
+coverage.xml
+htmlcov/
+
+# Generated documentation
+/docs/api/
+/docs/_build/
+
+# Editor and operating-system files
+*.swp
+*~
+.DS_Store
+.idea/
+.vscode/
+
+# Notebook copies prepared by Sphinx
+/docs/_notebooks/
