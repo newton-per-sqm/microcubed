@@ -35,10 +35,6 @@ jobs:
             target: aarch64-unknown-linux-gnu
             manylinux: '2_28'
             artifact: wheels-linux-aarch64
-          - os: macos-13
-            target: x86_64-apple-darwin
-            manylinux: 'off'
-            artifact: wheels-macos-x86_64
           - os: macos-14
             target: aarch64-apple-darwin
             manylinux: 'off'
