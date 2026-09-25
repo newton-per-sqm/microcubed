@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
     inputs:
       include_oommf:
-        description: Execute the optional Ubermag/OOMMF comparison (uses Docker)
+        description: Execute the optional Ubermag/OOMMF comparison (builds OOMMF)
         type: boolean
         default: false
 

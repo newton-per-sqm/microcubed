@@ -73,8 +73,17 @@ comparison lives in `examples/optional/`; see `docs/examples.md` for execution
 instructions. Core examples do not require an external solver.
 
 Before a release, update the version in `Cargo.toml`, refresh both lockfiles,
-and review `CHANGELOG.md`. The workflow validates distribution artifacts;
-package publication is a separate maintainer step.
+and review `CHANGELOG.md`. Create a GitHub release whose tag is exactly
+`v<version>`; `release.yml` verifies that tag, builds signed-platform wheels
+for Linux, macOS, and Windows, builds an sdist, and uploads them to PyPI through
+trusted publishing. The `abi3-py312` Rust extension produces one wheel per
+platform and architecture that supports CPython 3.12 and newer.
+
+Before the first publication, register a PyPI trusted publisher for project
+`microcubed`, owner `newton-per-sqm`, repository `microcubed`, workflow
+`release.yml`, and environment `pypi`. Create the matching protected `pypi`
+GitHub environment. This keeps PyPI credentials out of the repository and lets
+the release workflow obtain a short-lived upload token only after approval.
 
 ## Publishing documentation on GitHub Pages
 
@@ -86,7 +95,8 @@ The workflow run displays the deployed site URL.
 
 To publish executed OOMMF comparison results, open **Actions → Publish
 documentation → Run workflow**, select `main`, and enable `include_oommf`.
-This installs the optional comparison extra and uses oommfc's Docker runner.
+This installs the optional comparison extra and builds the pinned OOMMF release
+used by the comparison notebook.
 A later ordinary push rebuilds the core docs without those optional outputs;
 run the workflow with `include_oommf` again to republish the full comparison.
 

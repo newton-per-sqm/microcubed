@@ -1,4 +1,7 @@
+[![Documentation](https://img.shields.io/badge/docs-GitHub%20Pages-4b8bbe)](https://newton-per-sqm.github.io/microcubed/)
 [![CI](https://github.com/newton-per-sqm/microcubed/actions/workflows/ci.yml/badge.svg)](https://github.com/newton-per-sqm/microcubed/actions/workflows/ci.yml)
+[![Tested Python versions](https://img.shields.io/badge/tested%20Python-3.12%20%7C%203.13%20%7C%203.14-3776ab)](https://github.com/newton-per-sqm/microcubed/actions/workflows/ci.yml)
+[![Tested platforms](https://img.shields.io/badge/tested%20platforms-Linux%20%7C%20macOS%20%7C%20Windows-3776ab)](https://github.com/newton-per-sqm/microcubed/actions/workflows/ci.yml)
 
 # Microcubed
 
@@ -13,8 +16,18 @@ Magnetization is an input; Microcubed does not solve magnetic equilibrium or dyn
 
 ## Installation
 
-Python **3.12 or newer** is required. Building from source also requires a Rust
-toolchain (Cargo and rustc) and a platform linker/C compiler.
+Python **3.12 or newer** is required. Install the published package with:
+
+```bash
+python -m pip install microcubed
+```
+
+PyPI wheels contain the compiled Rust backend for supported Linux, macOS, and
+Windows platforms, so a Rust toolchain is not needed for normal installation.
+When no matching wheel exists, pip falls back to the source distribution;
+building that package requires Cargo, rustc, and a platform linker/C compiler.
+
+To install from a checkout:
 
 ```bash
 git clone https://github.com/newton-per-sqm/microcubed.git
