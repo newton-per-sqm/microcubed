@@ -22,7 +22,14 @@ jobs:
         with:
           python-version: '3.12'
       - run: uv sync --locked --extra examples --extra docs --extra comparison
-      # oommfc discovers its Docker runner on the Ubuntu GitHub-hosted runner.
+      - name: Install OOMMF
+        run: |
+          sudo apt-get update
+          sudo apt-get install --no-install-recommends --yes tcl-dev tk-dev
+          git clone --branch 21a0-1_20230927 --depth 1 \
+            https://github.com/fangohr/oommf.git "$RUNNER_TEMP/oommf"
+          make -C "$RUNNER_TEMP/oommf" build
+          echo "OOMMFTCL=$RUNNER_TEMP/oommf/oommf/oommf.tcl" >> "$GITHUB_ENV"
       - run: uv run --locked --extra examples --extra comparison python tools/notebooks.py --check --execute --include-optional
       - run: uv run --locked --extra docs --extra comparison sphinx-build -E -W --keep-going -b html docs docs/_build/html
       - uses: actions/upload-artifact@v6
