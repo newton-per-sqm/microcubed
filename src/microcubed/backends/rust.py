@@ -7,6 +7,7 @@ import numpy as np
 from microcubed.backends.equations import Bfield as numpy_bfield
 from microcubed.backends.equations import dBfield as numpy_dbfield
 from microcubed.backends.numpy import NumericArrangement, NumericMagnet, numpy_cache
+from microcubed.base import BasicMagnet
 
 try:
     from microcubed._rust import RustyArrangement, RustyMagnet
@@ -17,7 +18,7 @@ except ImportError as error:  # pragma: no cover - exercised only without the op
     ) from error
 
 
-def _raw_magnet(magnet: NumericMagnet) -> RustyMagnet:
+def _raw_magnet(magnet: BasicMagnet) -> RustyMagnet:
     return RustyMagnet(
         magnet.size.ravel().tolist(),
         magnet.center.ravel().tolist(),
