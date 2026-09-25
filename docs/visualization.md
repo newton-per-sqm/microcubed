@@ -18,8 +18,8 @@ varying:
 
 ## Source geometry
 
-All examples below use the same cuboid; lengths are in nm. White dashed
-outlines on plane maps are projections of its convex hull, not intersections
+All examples below use the same cuboid; lengths are in nm. White outlines on
+plane maps are projections of the source's `union_boundary`, not intersections
 with the sampling plane.
 
 ```{code-cell} python
@@ -28,7 +28,7 @@ import numpy as np
 from microcubed import Magnet
 
 magnet = Magnet([200, 120, 60], [0, 0, 0], [0, 0, 8e5])
-print("Projected XY hull (nm):\n", magnet.chull_points("xy"))
+print("Projected XY material boundary (nm):\n", magnet.union_boundary("xy"))
 ```
 
 ## 1D line section
@@ -76,7 +76,8 @@ fig, ax = magnet.plot_2d(
     cmap="seismic",
 )
 ax.set_aspect("equal")
-ax.plot(*magnet.chull_points("xy"), "w--", linewidth=2)
+for boundary in magnet.union_boundary("xy"):
+    ax.plot(*boundary, "w-", linewidth=2)
 ax.set(xlabel="x (nm)", ylabel="y (nm)", aspect="equal")
 plt.show()
 ```
@@ -92,7 +93,8 @@ fig, ax = magnet.plot_2d(
     component=("y", "z"),
     cmap="seismic",
 )
-ax.plot(*magnet.chull_points("xy"), "w--", linewidth=2)
+for boundary in magnet.union_boundary("xy"):
+    ax.plot(*boundary, "w-", linewidth=2)
 ax.set(xlabel="x (nm)", ylabel="y (nm)", aspect="equal")
 plt.show()
 ```
@@ -118,8 +120,8 @@ fig, ax = magnet.plot_3d(
 )
 from mpl_toolkits.mplot3d.art3d import Poly3DCollection
 
-hull = magnet.chull()
-ax.add_collection3d(Poly3DCollection(hull.points[hull.simplices], alpha=0.15, edgecolor="black"))
+faces = magnet.corners.T[[[0, 1, 3, 2], [4, 5, 7, 6], [0, 1, 5, 4], [2, 3, 7, 6], [0, 2, 6, 4], [1, 3, 7, 5]]]
+ax.add_collection3d(Poly3DCollection(faces, alpha=0.15, edgecolor="black"))
 ax.set(xlim=(-400, 400), ylim=(-300, 300), zlim=(-300, 40))
 ax.set_box_aspect((800, 600, 340))
 ax.set(xlabel="x (nm)", ylabel="y (nm)", zlabel="z (nm)")
@@ -147,7 +149,8 @@ magnet.plot_2d(
     ax=ax,
     colorbar=False,
 )
-ax.plot(*magnet.chull_points("xy"), "w--", linewidth=2)
+for boundary in magnet.union_boundary("xy"):
+    ax.plot(*boundary, "w-", linewidth=2)
 ax.set(xlabel="x (nm)", ylabel="y (nm)", aspect="equal")
 plt.show()
 ```
@@ -188,7 +191,8 @@ for derivative in range(3):
             vmax=limit,
         )
         fig.colorbar(image, ax=axes[derivative, component], shrink=0.65)
-        axes[derivative, component].plot(*magnet.chull_points("xy"), "k--", linewidth=1)
+        for boundary in magnet.union_boundary("xy"):
+            axes[derivative, component].plot(*boundary, "k-", linewidth=1)
         axes[derivative, component].set(
             title=f"dB{'xyz'[component]}/d{'xyz'[derivative]} (T/nm)",
             xlabel="x (nm)", ylabel="y (nm)", aspect="equal",

@@ -27,7 +27,19 @@ _active_backend = None
 
 
 def set_backend(name: str = "auto"):
-    """Set the classes used by the top-level ``Magnet`` and ``Arrangement`` names."""
+    """Set the implementation used by top-level ``Magnet`` and ``Arrangement``.
+
+    Parameters
+    ----------
+    name : {"auto", "numpy", "rust"}, default="auto"
+        Backend to select. ``"auto"`` chooses Rust when its extension is
+        importable and otherwise chooses NumPy.
+
+    Returns
+    -------
+    microcubed.backends.Backend
+        The selected backend namespace.
+    """
     global Arrangement, Magnet, _active_backend
     _active_backend = get_backend(name)
     Magnet = _active_backend.Magnet
@@ -36,7 +48,13 @@ def set_backend(name: str = "auto"):
 
 
 def backend_name() -> str:
-    """Return the name of the active top-level calculation backend."""
+    """Return the name of the active top-level calculation backend.
+
+    Returns
+    -------
+    str
+        Either ``"numpy"`` or ``"rust"``.
+    """
     return _active_backend.name
 
 
@@ -44,12 +62,42 @@ set_backend(os.getenv("MICROCUBED_BACKEND", "auto"))
 
 
 def cuboidize(shape, t, delta, mag, **kwargs):
-    """Return an arrangement of cuboids approximating an extruded 2D shape."""
+    """Approximate an extruded two-dimensional shape with cuboids.
+
+    Parameters
+    ----------
+    shape : array-like, matplotlib.path.Path, or callable
+        Polygon vertices, a Matplotlib path, or a callable Boolean mask.
+    t : float
+        Extrusion thickness.
+    delta : float or tuple of float
+        Maximum raster-cell spacing.
+    mag : array-like
+        Magnetization vector in A/m.
+
+    Returns
+    -------
+    Arrangement
+        A non-overlapping arrangement representing the rasterized shape.
+    """
     return Arrangement.from_shape(shape, t, delta, mag, **kwargs)
 
 
 def cuboidize_voronoi(grains, mag, **kwargs):
-    """Convert rasterized Voronoi grains into a compact cuboid arrangement."""
+    """Convert rasterized Voronoi grains into a compact cuboid arrangement.
+
+    Parameters
+    ----------
+    grains : VoronoiGrains
+        Two- or three-dimensional rasterized grains.
+    mag : array-like or callable
+        Shared, per-grain, or seed-dependent magnetization in A/m.
+
+    Returns
+    -------
+    Arrangement
+        Cuboids representing the occupied grain cells.
+    """
     return Arrangement.from_voronoi_grains(grains, mag, **kwargs)
 
 

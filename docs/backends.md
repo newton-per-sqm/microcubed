@@ -96,7 +96,7 @@ For both backends:
 - `Hfield`, `dHfield`, direct-call sampling, and plotting are identical;
 - magnet geometry arrays use the `(3, 1)`, `(3, 2)`, and `(3, 8)` conventions;
 - single-magnet interior and boundary points are masked with `NaN`;
-- arrangements, transformations, convex hulls, generators, and `from_shape`
+- arrangements, transformations, union boundaries, generators, and `from_shape`
   share one implementation; and
 - stable NumPy evaluation replaces a Rust result only at exceptional exterior
   points where direct corner expressions produce a removable non-finite form.

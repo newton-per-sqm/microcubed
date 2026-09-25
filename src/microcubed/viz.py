@@ -63,6 +63,21 @@ def sample_field(
     A scalar fixes an axis; ``(start, stop, count)`` or a one-dimensional
     array samples it. The returned field retains all three spatial axes,
     including length-one axes, which makes sections unambiguous.
+
+    Parameters
+    ----------
+    source : Magnet or Arrangement
+        Object providing the field method named by ``what``.
+    x, y, z : float, tuple of float and int, or numpy.ndarray
+        Fixed coordinate, uniform range, or explicit sample coordinates.
+    what : str, default="Bfield"
+        Field method to evaluate, such as ``"Bfield"`` or ``"dBfield"``.
+
+    Returns
+    -------
+    tuple
+        Cartesian coordinate arrays followed by a field array whose trailing
+        three dimensions correspond to x, y, and z.
     """
     coordinates = _coordinate_arrays(x, y, z)
     meshes = np.meshgrid(*coordinates, indexing="ij")
@@ -103,7 +118,26 @@ def plot_1d(
     ax: Axes | None = None,
     **plot_kwargs,
 ) -> tuple[Figure, Axes]:
-    """Plot a field along one varying coordinate section."""
+    """Plot a field along one varying coordinate section.
+
+    Parameters
+    ----------
+    source : Magnet or Arrangement
+        Field source to sample.
+    x, y, z : float, tuple, or numpy.ndarray
+        Exactly one coordinate must vary.
+    what : str, default="Bfield"
+        Field method to evaluate.
+    component : str, int, tuple, or None, default=None
+        Vector component, gradient component pair, or magnitude.
+    ax : matplotlib.axes.Axes, optional
+        Existing axes to draw into.
+
+    Returns
+    -------
+    tuple of matplotlib.figure.Figure and matplotlib.axes.Axes
+        Figure and axes containing the line plot.
+    """
     coordinates, field = sample_field(source, x=x, y=y, z=z, what=what)
     (axis,) = _check_dimension(coordinates, 1)
     values, label = _component_values(field, component, spatial_dimensions=3)
@@ -125,7 +159,28 @@ def plot_2d(
     colorbar: bool = True,
     **mesh_kwargs,
 ) -> tuple[Figure, Axes]:
-    """Plot a scalar field component on a two-dimensional section."""
+    """Plot a scalar field component on a two-dimensional section.
+
+    Parameters
+    ----------
+    source : Magnet or Arrangement
+        Field source to sample.
+    x, y, z : float, tuple, or numpy.ndarray
+        Exactly two coordinates must vary.
+    what : str, default="Bfield"
+        Field method to evaluate.
+    component : str, int, tuple, or None, default=None
+        Vector component, gradient component pair, or magnitude.
+    ax : matplotlib.axes.Axes, optional
+        Existing axes to draw into.
+    colorbar : bool, default=True
+        Add a colorbar for the sampled values.
+
+    Returns
+    -------
+    tuple of matplotlib.figure.Figure and matplotlib.axes.Axes
+        Figure and axes containing the field map.
+    """
     coordinates, field = sample_field(source, x=x, y=y, z=z, what=what)
     horizontal, vertical = _check_dimension(coordinates, 2)
     values, label = _component_values(field, component, spatial_dimensions=3)
@@ -160,7 +215,26 @@ def plot_3d(
     cmap: str = "viridis",
     **quiver_kwargs,
 ) -> tuple[Figure, Axes]:
-    """Plot a three-dimensional vector field as magnitude-coloured arrows."""
+    """Plot a three-dimensional vector field as magnitude-coloured arrows.
+
+    Parameters
+    ----------
+    source : Magnet or Arrangement
+        Field source to sample.
+    x, y, z : float, tuple, or numpy.ndarray
+        All three coordinates must vary.
+    what : str, default="Bfield"
+        Vector field method to evaluate.
+    ax : matplotlib.axes.Axes, optional
+        Existing three-dimensional axes to draw into.
+    max_points : int, default=2000
+        Maximum number of arrows after regular subsampling.
+
+    Returns
+    -------
+    tuple of matplotlib.figure.Figure and matplotlib.axes.Axes
+        Figure and axes containing the vector-field plot.
+    """
     coordinates, field = sample_field(source, x=x, y=y, z=z, what=what)
     _check_dimension(coordinates, 3)
     if field.ndim != 4:

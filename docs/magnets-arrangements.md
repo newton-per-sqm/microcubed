@@ -54,10 +54,10 @@ magnet.touching(moved)
 magnet.overlapping(moved)
 ```
 
-Convex hulls are available in 3D and as plane projections:
+Use the union boundary to obtain the projected material outline:
 
 ```python
-xy_outline = magnet.chull_points("xy")
+xy_outline = magnet.union_boundary("xy")
 ```
 
 ## `Arrangement`
@@ -222,18 +222,16 @@ boundaries at geometry-decomposition seams.
 Use `get_backend("rust").Arrangement` for the integrated parallel implementation.
 See {doc}`backends` for selection and comparisons with NumPy.
 
-## Union boundary versus convex hull
+## Union boundary
 
 `union_boundary(plane="xy", atol=None)` is available on both `Magnet` and
 `Arrangement`, with either numerical backend. It returns the boundary of the
 **union of projected cuboid footprints**, retaining concavities, disconnected
 pieces, and holes. Shared internal edges disappear; overlapping footprints merge.
-A convex hull instead spans concavities and gaps.
 
 ```python
 for boundary in arrangement.union_boundary("xy"):
     ax.plot(*boundary, color="cyan", label="Material boundary")
-ax.plot(*arrangement.chull_points("xy"), "k--", label="Convex hull")
 ```
 
 Each returned array has shape `(2, N)` and repeats its first vertex at the end.
@@ -241,9 +239,9 @@ Outer rings run counterclockwise and hole rings clockwise. Corner-touching
 components have separate rings; an empty arrangement returns `[]`. The list is
 not a hierarchy associating holes with their enclosing components.
 
-Supported planes are `xy`, `xz`, and `yz`. Like `chull_points`, reversed aliases
-such as `yx` use canonical axis order (x, then y). This is a projection, not a
-slice: cuboids separated in z can still have overlapping XY footprints.
+Supported planes are `xy`, `xz`, and `yz`. Reversed aliases such as `yx` use
+canonical axis order (x, then y). This is a projection, not a slice: cuboids
+separated in z can still have overlapping XY footprints.
 
 By default, coordinates within 32 machine epsilons times the largest absolute
 projected coordinate are snapped together to remove floating-point seams.
@@ -253,6 +251,11 @@ collapse; use a tolerance well below any gap or feature you need to resolve.
 The sweep keeps one coordinate-coverage vector in memory rather than allocating
 a dense 2D raster; its worst-case running time is quadratic in the cuboid count.
 
-See the [polygon example](_notebooks/shape.ipynb) for input-polygon, union-boundary,
-and convex-hull overlays. Refining the source raster improves the union boundary's
-approximation of the input polygon; it does not eliminate a convex hull's bridges.
+See the [polygon example](_notebooks/shape.ipynb) for input-polygon and
+union-boundary overlays. Refining the source raster improves the union
+boundary's approximation of the input polygon.
+
+`chull` and `chull_points` remain available when a geometric envelope is
+specifically required, for example in an external optimisation routine. They do
+not describe an arrangement's material footprint when it has gaps, holes, or
+concavities.

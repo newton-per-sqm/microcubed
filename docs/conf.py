@@ -33,6 +33,13 @@ html_theme_options = {
 }
 html_static_path = ["_static"]
 
+# Public docstrings follow the NumPy convention. Keeping the configuration
+# explicit prevents formatting changes when Sphinx/Napoleon defaults evolve.
+napoleon_google_docstring = False
+napoleon_numpy_docstring = True
+napoleon_use_param = False
+napoleon_use_rtype = False
+
 
 # Execute the canonical examples when Sphinx reads their generated copies.
 nb_execution_mode = "force"

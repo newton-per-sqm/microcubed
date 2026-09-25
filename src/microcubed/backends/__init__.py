@@ -33,7 +33,25 @@ def _rust_backend() -> Backend:
 
 
 def get_backend(name: str = "auto") -> Backend:
-    """Return a backend without changing the process-wide default classes."""
+    """Return a backend namespace without changing the process-wide default.
+
+    Parameters
+    ----------
+    name : {"auto", "numpy", "rust"}, default="auto"
+        Requested backend. ``"auto"`` selects Rust when its compiled extension
+        is available and otherwise selects NumPy.
+
+    Returns
+    -------
+    Backend
+        Namespace exposing matching ``Magnet``, ``Arrangement``, and shape
+        decomposition helpers.
+
+    Raises
+    ------
+    ValueError
+        If ``name`` is not a supported backend selector.
+    """
     normalized = name.lower()
     if normalized == "numpy":
         return _numpy_backend()
@@ -48,7 +66,14 @@ def get_backend(name: str = "auto") -> Backend:
 
 
 def available_backends() -> tuple[str, ...]:
-    """Return the calculation backends importable in the current environment."""
+    """Return calculation backends importable in the current environment.
+
+    Returns
+    -------
+    tuple of str
+        ``("numpy",)`` when the extension is unavailable, otherwise
+        ``("numpy", "rust")``.
+    """
     try:
         _rust_backend()
     except ImportError:

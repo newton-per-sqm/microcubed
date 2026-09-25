@@ -82,14 +82,8 @@ field = array.Bfield(points)
 import matplotlib.pyplot as plt
 
 fig, ax = array.plot_2d(x=(-300, 300, 61), y=(-200, 200, 41), z=-100, component="z")
-for index, cuboid in enumerate(array):
-    ax.plot(
-        *cuboid.chull_points("xy"),
-        color="black",
-        linewidth=1.3,
-        label="Projected cuboids" if index == 0 else None,
-    )
-ax.plot(*array.chull_points("xy"), "w--", linewidth=2, label="Projected convex hull")
+for index, boundary in enumerate(array.union_boundary("xy")):
+    ax.plot(*boundary, color="#00ffff", linewidth=2, label="Material boundary" if index == 0 else None)
 ax.set(xlabel="x (nm)", ylabel="y (nm)", title="Bz (T) at z = -100 nm", aspect="equal")
 ax.legend(loc="upper right", fontsize=8, facecolor="#555555", labelcolor="white", framealpha=0.95)
 fig.tight_layout()
@@ -151,7 +145,7 @@ import matplotlib.pyplot as plt
 fig, ax = shape.plot_2d(x=(-40, 145, 201), y=(-25, 140, 201), z=-60, component="z")
 for index, cuboid in enumerate(shape):
     ax.plot(
-        *cuboid.chull_points("xy"),
+        *cuboid.union_boundary("xy")[0],
         color="black",
         linewidth=0.3,
         alpha=0.35,
@@ -160,7 +154,6 @@ for index, cuboid in enumerate(shape):
 ax.plot(*np.vstack([polygon, polygon[0]]).T, color="#ff9500", linewidth=1.5, label="Input polygon")
 for index, boundary in enumerate(shape.union_boundary("xy")):
     ax.plot(*boundary, color="#00ffff", linewidth=1.5, label="Union boundary" if index == 0 else None)
-ax.plot(*shape.chull_points("xy"), "w--", linewidth=1.7, label="Projected convex hull")
 ax.set(xlabel="x (nm)", ylabel="y (nm)", title="Bz (T) at z = -60 nm; delta = 0.5 nm", aspect="equal")
 ax.legend(loc="upper right", fontsize=7, facecolor="#555555", labelcolor="white", framealpha=0.95)
 fig.tight_layout()
@@ -189,7 +182,8 @@ print(field)
 import matplotlib.pyplot as plt
 
 fig, ax = cube.plot_2d(x=(-250, 250, 61), y=(-250, 250, 61), z=-150, component="z")
-ax.plot(*cube.chull_points("xy"), "w--", linewidth=2, label="Projected convex hull")
+for boundary in cube.union_boundary("xy"):
+    ax.plot(*boundary, "w-", linewidth=2, label="Material boundary")
 ax.set(xlabel="x (nm)", ylabel="y (nm)", title="Bz (T) at z = -150 nm", aspect="equal")
 ax.legend(loc="upper right", fontsize=8, facecolor="#555555", labelcolor="white", framealpha=0.95)
 fig.tight_layout()

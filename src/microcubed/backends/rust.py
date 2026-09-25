@@ -26,15 +26,33 @@ def _raw_magnet(magnet: NumericMagnet) -> RustyMagnet:
 
 
 class RustMagnet(NumericMagnet):
-    """Microcubed magnet using the integrated Rust field kernel."""
+    """Cuboid magnet evaluated by the integrated parallel Rust field kernel.
+
+    Parameters
+    ----------
+    size, center, magnetization : array-like
+        Three Cartesian components in the project's length unit and A/m.
+    """
 
     backend = "rust"
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, size, center, magnetization):
+        super().__init__(size, center, magnetization)
         self._rust = _raw_magnet(self)
 
     def Bfield(self, points: np.ndarray) -> np.ndarray:
+        """Evaluate the exterior magnetic flux density.
+
+        Parameters
+        ----------
+        points : array-like
+            Observation points with shape ``(3, N)``.
+
+        Returns
+        -------
+        numpy.ndarray
+            Flux density ``(Bx, By, Bz)`` in tesla with shape ``(3, N)``.
+        """
         prepared = self.prepare_points(points)
         result = np.asarray(self._rust.bfield(prepared))
         finite_input = np.all(np.isfinite(prepared), axis=0)
@@ -49,6 +67,19 @@ class RustMagnet(NumericMagnet):
         return result
 
     def dBfield(self, points: np.ndarray) -> np.ndarray:
+        """Evaluate the exterior magnetic-flux-density gradient.
+
+        Parameters
+        ----------
+        points : array-like
+            Observation points with shape ``(3, N)``.
+
+        Returns
+        -------
+        numpy.ndarray
+            Gradient with shape ``(3, 3, N)``. The first axis is the
+            derivative direction and the second is the field component.
+        """
         prepared = self.prepare_points(points)
         result = np.asarray(self._rust.dbfield(prepared)).reshape(3, 3, -1)
         finite_input = np.all(np.isfinite(prepared), axis=0)
@@ -64,19 +95,39 @@ class RustMagnet(NumericMagnet):
 
 
 class RustArrangement(NumericArrangement):
-    """Microcubed arrangement summed by the integrated Rust kernel."""
+    """Arrangement summed by the integrated parallel Rust field kernel.
+
+    Parameters
+    ----------
+    magnets : sequence of Magnet, optional
+        Cuboids included in the superposition.
+    validate : bool, default=True
+        Check that cuboids do not overlap.
+    """
 
     Magnet = RustMagnet
     backend = "rust"
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, magnets=None, validate: bool = True):
+        super().__init__(magnets, validate=validate)
         self._rust = RustyArrangement(
             [magnet._rust if isinstance(magnet, RustMagnet) else _raw_magnet(magnet) for magnet in self]
         )
 
     @numpy_cache(maxsize=20)
     def Bfield(self, points: np.ndarray) -> np.ndarray:
+        """Evaluate the summed magnetic flux density at observation points.
+
+        Parameters
+        ----------
+        points : array-like
+            Observation points with shape ``(3, N)``.
+
+        Returns
+        -------
+        numpy.ndarray
+            Flux density in tesla with shape ``(3, N)``.
+        """
         prepared = self.prepare_points(points)
         result = np.asarray(self._rust.bfield(prepared))
         fallback = ~np.all(np.isfinite(result), axis=0)
@@ -88,6 +139,18 @@ class RustArrangement(NumericArrangement):
 
     @numpy_cache(maxsize=20)
     def dBfield(self, points: np.ndarray) -> np.ndarray:
+        """Evaluate the summed magnetic-flux-density gradient.
+
+        Parameters
+        ----------
+        points : array-like
+            Observation points with shape ``(3, N)``.
+
+        Returns
+        -------
+        numpy.ndarray
+            Gradient in field units per length with shape ``(3, 3, N)``.
+        """
         prepared = self.prepare_points(points)
         result = np.asarray(self._rust.dbfield(prepared)).reshape(3, 3, -1)
         fallback = ~np.all(np.isfinite(result), axis=(0, 1))
